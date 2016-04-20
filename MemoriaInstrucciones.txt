@@ -32,10 +32,9 @@ use std.textio.all;
 --use UNISIM.VComponents.all;
 
 entity MeomoriaInstrucciones is
-    Port ( IMclk : in  STD_LOGIC;
-			  IMreset : in  STD_LOGIC;
+    Port ( IMreset : in  STD_LOGIC;
            IMdireccion : in  STD_LOGIC_VECTOR (31 downto 0);
-           IMinstruccion : in  STD_LOGIC_VECTOR (31 downto 0));
+           IMinstruccion : out  STD_LOGIC_VECTOR (31 downto 0));
 end MeomoriaInstrucciones;
 
 architecture ArquiterturaMemInstrucciones of MeomoriaInstrucciones is
@@ -67,7 +66,7 @@ begin
 			if(IMreset = '1')then
 				IMinstruccion <= (others=>'0');
 			else
-				IMinstruccion <= instructions(conv_integer(IMdireccion(5 downto 0)));
+				IMinstruccion <= instructions(conv_integer(IMdireccion(4 downto 0)));
 			end if;
 		--end if;
 	end process;

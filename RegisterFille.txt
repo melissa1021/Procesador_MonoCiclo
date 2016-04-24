@@ -1,4 +1,3 @@
-----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
 -- 
@@ -31,7 +30,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 entity RegisterFille is
-    Port ( RS1 : in  STD_LOGIC_VECTOR (4 downto 0);
+    Port ( RFCLK : in  STD_LOGIC;
+			  RS1 : in  STD_LOGIC_VECTOR (4 downto 0);
            RS2 : in  STD_LOGIC_VECTOR (4 downto 0);
            RD : in  STD_LOGIC_VECTOR (4 downto 0);
            RALU : in  STD_LOGIC_VECTOR (31 downto 0);
@@ -49,24 +49,24 @@ architecture ArquitecturaRegisterFille of RegisterFille is
 
 begin
 
-	process(RFreset,RS1,RS2,RD,Temp,RALU)
+	process(RFreset,RS1,RS2,RD,Temp,RALU,RFCLK)
 	
 begin
-	
-	if(RFreset = '1')then
-				CRS1 <= (others=>'0');
-				CRS2 <= (others=>'0');
-				RDinter <= (others=>'0');
-				registers <= (others => x"00000000");
-			else
-				CRS1 <= registers(conv_integer(RS1));
-				CRS2 <= registers(conv_integer(RS2));
-				RDinter <= registers(conv_integer(RD));
-				if(Temp = '1' and RD /= "000000")then
-					registers(conv_integer(RD)) <= RALU;
+	if(rising_edge(RFCLK))then
+		if(RFreset = '1')then
+					CRS1 <= (others=>'0');
+					CRS2 <= (others=>'0');
+					RDinter <= (others=>'0');
+					registers <= (others => x"00000000");
+				else
+					CRS1 <= registers(conv_integer(RS1));
+					CRS2 <= registers(conv_integer(RS2));
+					RDinter <= registers(conv_integer(RD));
+					if(Temp = '1' and RD /= "000000")then
+						registers(conv_integer(RD)) <= RALU;
+					end if;
 				end if;
-			end if;
-	
+			end if;	
 	end process;
 
 end ArquitecturaRegisterFille;

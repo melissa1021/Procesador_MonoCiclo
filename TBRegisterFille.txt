@@ -1,115 +1,69 @@
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 -- Company: 
--- Engineer:
+-- Engineer: 
+-- 
+-- Create Date:    18:35:34 04/19/2016 
+-- Design Name: 
+-- Module Name:    RegisterFille - ArquitecturaRegisterFille 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
 --
--- Create Date:   15:42:42 04/24/2016
--- Design Name:   
--- Module Name:   C:/Users/Melissa/Documents/Arquitectura/Ejercicios_Xilinx/Procesador_Mono_Ciclo/TBRegisterFille.vhd
--- Project Name:  Procesador_Mono_Ciclo
--- Target Device:  
--- Tool versions:  
--- Description:   
--- 
--- VHDL Test Bench Created by ISE for module: RegisterFille
--- 
--- Dependencies:
--- 
--- Revision:
+-- Dependencies: 
+--
+-- Revision: 
 -- Revision 0.01 - File Created
--- Additional Comments:
+-- Additional Comments: 
 --
--- Notes: 
--- This testbench has been automatically generated using types std_logic and
--- std_logic_vector for the ports of the unit under test.  Xilinx recommends
--- that these types always be used for the top-level I/O of a design in order
--- to guarantee that the testbench will bind correctly to the post-implementation 
--- simulation model.
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
+
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---USE ieee.numeric_std.ALL;
- 
-ENTITY TBRegisterFille IS
-END TBRegisterFille;
- 
-ARCHITECTURE behavior OF TBRegisterFille IS 
- 
-    -- Component Declaration for the Unit Under Test (UUT)
- 
-    COMPONENT RegisterFille
-    PORT(
-         RS1 : IN  std_logic_vector(4 downto 0);
-         RS2 : IN  std_logic_vector(4 downto 0);
-         RD : IN  std_logic_vector(4 downto 0);
-         RALU : IN  std_logic_vector(31 downto 0);
-         CRS1 : OUT  std_logic_vector(31 downto 0);
-         CRS2 : OUT  std_logic_vector(31 downto 0);
-         RFreset : IN  std_logic
-        );
-    END COMPONENT;
-    
+--use IEEE.NUMERIC_STD.ALL;
 
-   --Inputs
-   signal RS1 : std_logic_vector(4 downto 0) := (others => '0');
-   signal RS2 : std_logic_vector(4 downto 0) := (others => '0');
-   signal RD : std_logic_vector(4 downto 0) := (others => '0');
-   signal RALU : std_logic_vector(31 downto 0) := (others => '0');
-   signal RFreset : std_logic := '0';
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
 
- 	--Outputs
-   signal CRS1 : std_logic_vector(31 downto 0) := (others => '0');
-   signal CRS2 : std_logic_vector(31 downto 0)  := (others => '0');
+entity RegisterFille is
+    Port (
+			  RS1 : in  STD_LOGIC_VECTOR (4 downto 0);
+           RS2 : in  STD_LOGIC_VECTOR (4 downto 0);
+           RD : in  STD_LOGIC_VECTOR (4 downto 0);
+           RALU : in  STD_LOGIC_VECTOR (31 downto 0);
+           CRS1 : out  STD_LOGIC_VECTOR (31 downto 0);
+           CRS2 : out  STD_LOGIC_VECTOR (31 downto 0);
+			  RFreset : in  STD_LOGIC);
+end RegisterFille;
 
-   -- Clock period definitions
-   --constant RFCLK_period : time := 10 ns;
- 
-BEGIN
- 
-	-- Instantiate the Unit Under Test (UUT)
-   uut: RegisterFille PORT MAP (
-          RS1 => RS1,
-          RS2 => RS2,
-          RD => RD,
-          RALU => RALU,
-          CRS1 => CRS1,
-          CRS2 => CRS2,
-          RFreset => RFreset
-        );
+architecture ArquitecturaRegisterFille of RegisterFille is
 
-   -- Clock process definitions
---   RFCLK_process :process
---   begin
---		RFCLK <= '0';
---		wait for RFCLK_period/2;
---		RFCLK <= '1';
---		wait for RFCLK_period/2;
---   end process;
- 
+	type ram_type is array (0 to 39) of std_logic_vector (31 downto 0);
+	signal registers : ram_type :=(others => x"00000000");
 
-   -- Stimulus process
-   stim_proc: process
-   begin
-	    RFreset<='1';
-      -- hold reset state for 100 ns.
-      wait for 100 ns;
+begin
 
+	process(RFreset,RS1,RS2,RD,RALU)
+	
+begin
+		if(RFreset = '1')then
+					CRS1 <= (others=>'0');
+					CRS2 <= (others=>'0');
+					registers <= (others => x"00000000");
+				else
+					CRS1 <= registers(conv_integer(RS1));
+					CRS2 <= registers(conv_integer(RS2));
+					if(RD /= "000000")then
+						registers(conv_integer(RD)) <= RALU;
+					end if;
+				end if;
+	end process;
 
-		RFreset<='0';
-		
-		--wait for 30 ns;
+end ArquitecturaRegisterFille;
 
-      --wait for clk_period*10;
-		
-		RS1 <="01000";
-		RS2 <="10000";
-		RD <="00110";
-		RALU<="00000000000000000000000000000111";
-
-      wait;
-   end process;
-
-END;
